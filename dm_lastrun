@@ -1,7 +1,7 @@
 #
-#Thu Mar 12 11:36:49 CET 2015
-ec=~bought(lamp)
-file=src/dm/example/eah_aorta.dm
-beliefs=badInfo(bob) && registered(bob) && participates(bob,lamp)
-influences=bought(lamp) && ~bought(lamp)
-controllables=bid(bob,lamp) && participates(bob,lamp) && registered(bob) && verified(bob) && badInfo(bob) && viol(bob,buyer,obliged,verified(bob))
+#Sat Mar 14 21:28:03 CET 2015
+ec=~b
+file=src/dm/example/eah_4.dm
+beliefs=i && r && p
+influences=b && ~b
+controllables=b && p && r && v && s1

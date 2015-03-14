@@ -107,6 +107,12 @@ public class DMGui extends JFrame {
 		influences.setMaximumSize(new Dimension(600, 30));
 		setup.add(lblInfluences);
 		setup.add(influences);
+		
+		JLabel lblControllable = new JLabel("Controllable:");
+		final JTextField controllable = new JTextField(lastInput.getProperty("controllables"));
+		controllable.setMaximumSize(new Dimension(600, 30));
+		setup.add(lblControllable);
+		setup.add(controllable);
 
 		JButton loadRules = new JButton("Generate model");
 		setup.add(loadRules);		
@@ -140,9 +146,18 @@ public class DMGui extends JFrame {
 					return;
 				}
 				
+				Set<Term> c;
+				try {
+					c = ProgramLoader.parseTerms(controllable.getText());
+				} catch (RecognitionException ex) {
+					runOutput.append("Could not read controllables\n");
+					runOutput.append(exceptionToString(ex));
+					return;
+				}
+				
 				fullModel.append("Generating model...\n");
 				ModelGenerator gen = new ModelGenerator(program);
-				QDTModel qdt = gen.generate(f);
+				QDTModel qdt = gen.generate(f, c);
 
 				fullModel.append("Worlds: " + qdt.getWorlds() + "\n");
 				fullModel.append("P: " + qdt.printPreferenceOrdering() + "\n");
@@ -166,12 +181,6 @@ public class DMGui extends JFrame {
 		setup.add(lblBeliefs);
 		setup.add(beliefs);
 				
-		JLabel lblControllable = new JLabel("Controllable:");
-		final JTextField controllable = new JTextField(lastInput.getProperty("controllables"));
-		controllable.setMaximumSize(new Dimension(600, 30));
-		setup.add(lblControllable);
-		setup.add(controllable);
-		
 		JButton run = new JButton("Run");
 		setup.add(run);
 		
@@ -207,7 +216,7 @@ public class DMGui extends JFrame {
 			runOutput.append("Generating model based on beliefs...\n");
 			ModelGenerator gen = new ModelGenerator(program);
 			try {
-				QDTModel qdt = gen.generate(f);
+				QDTModel qdt = gen.generate(f, c);
 
 				DecisionModel model = new DecisionModel(qdt, f, c, bb);
 
@@ -283,7 +292,7 @@ public class DMGui extends JFrame {
 			
 			ModelGenerator gen = new ModelGenerator(program);
 			try {
-				QDTModel qdt = gen.generate(f);
+				QDTModel qdt = gen.generate(f, c);
 
 				DecisionModel model = new DecisionModel(qdt, f, c, bb);
 

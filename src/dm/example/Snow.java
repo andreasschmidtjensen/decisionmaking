@@ -43,14 +43,15 @@ public class Snow {
 		System.out.println("N-Rules: " + program.getNormalityRules());
 
 		ModelGenerator mg = new ModelGenerator(program);
-		QDTModel qdt = mg.generate(influences);
+		Set<Term> controllables
+				= asSet(new Term("f"), new Term("w"), new Term("e"));
+		QDTModel qdt = mg.generate(influences, controllables);
 
 		System.out.println("Initial worlds: " + qdt.getWorlds());
 		System.out.println("Initial P:\n" + qdt.getPreferenceOrdering());
 		System.out.println("Initial N:\n" + qdt.getNormalityOrdering());
 				
-		DecisionModel m = new DecisionModel(qdt, influences, 
-				asSet(new Term("f"), new Term("w"), new Term("e")), 
+		DecisionModel m = new DecisionModel(qdt, influences, controllables, 
 				asSet(new Literal("s", false)));
 		
 		System.out.println("BB: " + m.getBeliefBase());

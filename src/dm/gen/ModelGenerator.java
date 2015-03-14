@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -55,12 +54,12 @@ public class ModelGenerator {
 		this.program = program;
 	}
 		
-	public QDTModel generate(Set<Literal> influences) throws DMException {
+	public QDTModel generate(Set<Literal> influences, Set<Term> controllables) throws DMException {
 		List<Rule> rules = new ArrayList<>();
 		rules.addAll(program.getNormalityRules());
 		rules.addAll(program.getPreferenceRules());
 		
-		atoms = retrieveAtoms(influences, rules);
+		atoms = retrieveAtoms(influences, controllables, rules);
 		Map<Integer, Set<Term>> worlds = init(program.getImpossible());
 		
 		return new QDTModel(worlds, 
@@ -86,48 +85,62 @@ public class ModelGenerator {
 		return ordering;
 	}
 
-	private Set<Term> retrieveAtoms(Set<Literal> influences, List<Rule> rules) {
-		Set<Term> result = new HashSet<>();
-		
-		map = new HashMap<>();
-		for (Rule rule : rules) {
-			Set<Term> termsInRule = rule.getPropositions();
-			for (Term term : termsInRule) {
-				if (!map.containsKey(term)) {
-					map.put(term, new HashSet<>());
-				}
-				map.get(term).add(rule);
+	private Set<Term> retrieveAtoms(Set<Literal> influences, Set<Term> controllables, List<Rule> rules) {
+		Set<Term> atoms = new HashSet<>();
+		for (Literal l : influences) {
+			atoms.add(new Term(l.getName()));
+		}
+		Set<Term> checked = new HashSet<>();
+		Queue<Term> pending = new LinkedList<>(atoms);
+		while (!pending.isEmpty()) {
+			Term a = pending.poll();
+			if (checked.contains(a)) {
+				continue;
 			}
+			
+			for (Rule rule : rules) {
+				// ignore rule if none of the consequents are controllable by the agent 
+				// (i.e. the agent's actions cannot lead to this and the rule is thus irrelevant)
+				Set<Term> consequent = new HashSet<>(rule.getConsequent().getPropositions());
+				consequent.retainAll(controllables);
+				if (consequent.isEmpty()) {
+					continue;
+				}
+				Set<Term> termsInRule = rule.getPropositions();
+				if (termsInRule.contains(a)) {
+					atoms.addAll(termsInRule);
+					pending.addAll(termsInRule);
+				}
+			}
+			
+			checked.add(a);
 		}
 		
-		for (Term term : map.keySet()) {
-			checked = new HashSet<>();
-			if (reaches(term, influences)) {
-				result.add(term);
-			}
-		}	
-
-		return result;
+		return atoms;
 	}
 
-	private boolean reaches(Term test, Set<Literal> influences) {
+	private boolean reaches(Term test, Set<Term> influences, Set<Term> controllables) {
 		if (!map.containsKey(test)) {
 			return false;
 		}
 		
 		for (Rule rule : map.get(test)) {
 			if (rule.getPropositions().stream().anyMatch((Term t) ->
-					influences.contains(new Literal(t.getName())) || influences.contains(new Literal(t.getName(), false)))) {
+					influences.contains(t))) {
 				return true;
 			}
-		}		
+		}	
 		for (Rule rule : map.get(test)) {
-			if (!rule.getAntecedent().getPropositions().contains(test)) {
+			// ignore rule if none of the consequents are controllable by the agent 
+			// (i.e. the agent's actions cannot lead to this and the rule is thus irrelevant)
+			Set<Term> consequent = new HashSet<>(rule.getConsequent().getPropositions());
+			consequent.retainAll(controllables);
+			if (consequent.isEmpty()) {
 				continue;
 			}
 			checked.add(test);
 			for (Term t : rule.getPropositions()) {
-				if (!checked.contains(t) && reaches(t, influences)) {
+				if (!checked.contains(t) && reaches(t, influences, controllables)) {
 					return true;
 				}
 			}

@@ -1,12 +1,12 @@
 % I = bid(bob,lamp) && ~bid(bob,lamp)
 % B = badInfo(bob) && registered(bob) && participates(bob,lamp)
-% C = bid(bob,lamp) && participates(bob,lamp) && registered(bob) && verified(bob) && badInfo(bob) && viol(bob,buyer,obliged,verified(bob))
+% C = bid(bob,lamp) && participates(bob,lamp) && registered(bob) && verified(bob) && viol(bob,buyer,obliged,verified(bob))
 % Pref=[bid(bob,lamp)]
 % Tol=[~bid(bob,lamp)]
 % Dec=[~bid(bob,lamp)]
 %
 % B = ~badInfo(bob) && registered(bob) && participates(bob,lamp)
-% C = bid(bob,lamp) && participates(bob,lamp) && registered(bob) && verified(bob) && badInfo(bob) && viol(bob,buyer,obliged,verified(bob))
+% C = bid(bob,lamp) && participates(bob,lamp) && registered(bob) && verified(bob) && viol(bob,buyer,obliged,verified(bob))
 % Pref=[bid(bob,lamp)]
 % Tol=[bid(bob,lamp), ~bid(bob,lamp)]
 % Dec=[bid(bob,lamp)]
