@@ -6,6 +6,7 @@
 package dm.gui;
 
 import dm.ProgramLoader;
+import dm.gen.DMException;
 import dm.gen.ModelGenerator;
 import dm.gen.Rule;
 import dm.gen.RuleProgram;
@@ -16,10 +17,8 @@ import dm.syntax.Term;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,8 +26,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -158,6 +155,8 @@ public class DMGui extends JFrame {
 			} catch (IOException | RecognitionException ex) {
 				fullModel.append("Could not parse program!\n");
 				fullModel.append(exceptionToString(ex));
+			} catch (DMException ex) {
+				fullModel.append(ex.getMessage() + "\n");
 			}
 		});
 		
@@ -207,28 +206,32 @@ public class DMGui extends JFrame {
 			
 			runOutput.append("Generating model based on beliefs...\n");
 			ModelGenerator gen = new ModelGenerator(program);
-			QDTModel qdt = gen.generate(f);
+			try {
+				QDTModel qdt = gen.generate(f);
 
-			DecisionModel model = new DecisionModel(qdt, f, c, bb);
-			
-			runOutput.append("Making a decision...\n");
-			
-			if (qdt.getWorlds().isEmpty()) {
-				runOutput.append("No possible worlds!\n");
-				return;
+				DecisionModel model = new DecisionModel(qdt, f, c, bb);
+
+				runOutput.append("Making a decision...\n");
+
+				if (qdt.getWorlds().isEmpty()) {
+					runOutput.append("No possible worlds!\n");
+					return;
+				}
+
+				Set<Literal> tol = model.getMostTolerableConsequences();
+				Set<Literal> pref = model.getMostPreferredInfluences();
+				Set<Literal> dec = model.getDecision();
+
+				runOutput.append("Worlds: " + qdt.getWorlds() + "\n");
+				runOutput.append("P: " + qdt.printPreferenceOrdering() + "\n");
+				runOutput.append("N: " + qdt.printNormalityOrdering() + "\n");
+
+				runOutput.append("Pref=" + pref + "\n");
+				runOutput.append("Tol=" + tol + "\n");
+				runOutput.append("Dec=" + dec + "\n");
+			} catch (DMException ex) {
+				runOutput.append(ex.getMessage() + "\n");
 			}
-			
-			Set<Literal> tol = model.getMostTolerableConsequences();
-			Set<Literal> pref = model.getMostPreferredInfluences();
-			Set<Literal> dec = model.getDecision();
-						
-			runOutput.append("Worlds: " + qdt.getWorlds() + "\n");
-			runOutput.append("P: " + qdt.printPreferenceOrdering() + "\n");
-			runOutput.append("N: " + qdt.printNormalityOrdering() + "\n");
-
-			runOutput.append("Pref=" + pref + "\n");
-			runOutput.append("Tol=" + tol + "\n");
-			runOutput.append("Dec=" + dec + "\n");
 		});
 		
 				
@@ -279,17 +282,21 @@ public class DMGui extends JFrame {
 			save();
 			
 			ModelGenerator gen = new ModelGenerator(program);
-			QDTModel qdt = gen.generate(f);
+			try {
+				QDTModel qdt = gen.generate(f);
 
-			DecisionModel model = new DecisionModel(qdt, f, c, bb);
-			
-			runOutput.append("Getting expected consequences of " + l + "\n");
-			
-			if (qdt.getWorlds().isEmpty()) {
-				runOutput.append("No possible worlds!\n");
-				return;
+				DecisionModel model = new DecisionModel(qdt, f, c, bb);
+
+				runOutput.append("Getting expected consequences of " + l + "\n");
+
+				if (qdt.getWorlds().isEmpty()) {
+					runOutput.append("No possible worlds!\n");
+					return;
+				}
+				runOutput.append("EC=" + model.getExpectedConsequences(l) + "\n");
+			} catch (DMException ex) {
+				runOutput.append(ex.getMessage() + "\n");
 			}
-			runOutput.append("EC=" + model.getExpectedConsequences(l) + "\n");
 		});
 		
 		return setup;		

@@ -41,9 +41,13 @@ public class True implements Formula {
 	}
 	
 	@Override
-	public Set<? extends Term> getTerms() {
+	public Set<Term> getPropositions() {
 		return new HashSet<>();
 	}
 	
+	@Override
+	public boolean contains(Term t) {
+		return false;
+	}
 	
 }

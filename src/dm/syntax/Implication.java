@@ -40,11 +40,15 @@ public class Implication implements Formula {
 	}
 	
 	@Override
-	public Set<? extends Term> getTerms() {
+	public Set<Term> getPropositions() {
 		Set<Term> t = new HashSet<>();
-		t.addAll(fml1.getTerms());
-		t.addAll(fml2.getTerms());
+		t.addAll(fml1.getPropositions());
+		t.addAll(fml2.getPropositions());
 		return t;
 	}
 	
+	@Override
+	public boolean contains(Term t) {
+		return fml1.contains(t) || fml2.contains(t);
+	}
 }

@@ -1,0 +1,16 @@
+MAS jasondm {
+
+
+
+    infrastructure: Centralised
+
+
+
+    agents:
+
+        ag1 [dm="eah.dm",c="bid(bob,lamp) && participates(bob,lamp)"] agentClass dm.DMAgent;
+		
+	classpath: "../dist/decisionmaking.jar";"../lib/antlr-3.4-complete.jar";
+}
+
+

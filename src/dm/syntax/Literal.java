@@ -30,6 +30,10 @@ public class Literal extends Term {
 		return negated;
 	}
 	
+	public Literal negate() {
+		return new Literal(getName(), negated);
+	}
+	
 	@Override
 	public boolean check(QDTModel m, int world) {
 		boolean result = new Term(getName()).check(m, world);
@@ -69,10 +73,15 @@ public class Literal extends Term {
 	}
 
 	@Override
-	public Set<? extends Term> getTerms() {
+	public Set<Term> getPropositions() {
 		Set<Term> result = new HashSet<>();
 		result.add(new Term(getName()));
 		return result;
+	}
+	
+	@Override
+	public boolean contains(Term t) {
+		return equals(t);
 	}
 	
 }

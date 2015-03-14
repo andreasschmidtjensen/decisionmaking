@@ -46,10 +46,10 @@ public class Rule implements Comparable<Rule> {
 		}
 	}
 	
-	Set<Term> getTerms() {
+	Set<Term> getPropositions() {
 		Set<Term> terms = new HashSet<>();
-		terms.addAll(antecedent.getTerms());
-		terms.addAll(consequent.getTerms());
+		terms.addAll(antecedent.getPropositions());
+		terms.addAll(consequent.getPropositions());
 		return terms;
 	}
 	

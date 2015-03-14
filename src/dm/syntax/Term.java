@@ -64,10 +64,14 @@ public class Term implements Formula {
 	}
 	
 	@Override
-	public Set<? extends Term> getTerms() {
+	public Set<Term> getPropositions() {
 		Set<Term> result = new HashSet<>();
 		result.add(this);
 		return result;
 	}
 	
+	@Override
+	public boolean contains(Term t) {
+		return equals(t);
+	}
 }

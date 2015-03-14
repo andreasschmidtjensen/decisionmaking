@@ -15,6 +15,7 @@ import dm.syntax.RelativeTolerance;
 import dm.syntax.Term;
 import dm.syntax.True;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -39,11 +40,25 @@ public class DecisionModel {
 			this.controllable.add(new Literal(l.getName(), false));
 		}
 		this.beliefBase = beliefBase;
+		removeIrrelevantFromBB();
 		updateWorlds();
 	}
 	
+	public boolean isEmpty() {
+		return qdt.isEmpty();
+	}
+	
+	private void removeIrrelevantFromBB() {
+		for (Iterator<Literal> it = beliefBase.iterator(); it.hasNext();) {
+			Literal l = it.next();
+			if (!qdt.getAtoms().contains(new Term(l.getName()))) {
+				it.remove();
+			}
+		}
+	}
+	
 	private void updateWorlds() {
-		qdt.update(beliefBase);
+		qdt.update(beliefBase, controllable);
 	}
 
 	public Set<Literal> getBeliefBase() {
@@ -52,32 +67,34 @@ public class DecisionModel {
 	
 	public Formula getExpectedConsequences(Formula fml) {
 		True TRUE = new True();
-		Formula resultCon = TRUE;
+		Formula result = TRUE;
 		
-		Formula bbCon = TRUE;
-		for (Term t : beliefBase) {
-			if (bbCon == TRUE) {
-				bbCon = t;
-			} else {
-				bbCon = new And(bbCon, t);
-			}
-		}
 		for (Literal c : controllable) {
 			if (fml.equals(c)) {
 				continue;
 			}
+			Formula test = revise(beliefBase, fml);
 			
-			And test = new And(bbCon, fml);
 			ConditionalNormality norm = new ConditionalNormality(test, c);
 			if (norm.check(qdt, qdt.getWorld())) {
-				if (resultCon == TRUE) {
-					resultCon = c;
+				if (result == TRUE) {
+					result = c;
 				} else {
-					resultCon = new And(resultCon, c);
+					result = new And(result, c);
 				}
 			}
 		}
-		return resultCon;
+		return result;
+	}
+	
+	private Formula revise(Set<Literal> bb, Formula fml) {
+		Formula result = fml;
+		for (Literal b : bb) {
+			if (!fml.contains(b.negate()) && !fml.contains(b)) {
+				result = new And(result, b);
+			}
+		}
+		return result;
 	}
 	
 	public Set<Literal> getMostPreferredInfluences() {

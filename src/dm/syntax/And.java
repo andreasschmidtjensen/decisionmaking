@@ -39,11 +39,15 @@ public class And implements Formula {
 	}
 	
 	@Override
-	public Set<? extends Term> getTerms() {
+	public Set<Term> getPropositions() {
 		Set<Term> t = new HashSet<>();
-		t.addAll(f1.getTerms());
-		t.addAll(f2.getTerms());
+		t.addAll(f1.getPropositions());
+		t.addAll(f2.getPropositions());
 		return t;
 	}
 	
+	@Override
+	public boolean contains(Term t) {
+		return f1.contains(t) || f2.contains(t);
+	}
 }

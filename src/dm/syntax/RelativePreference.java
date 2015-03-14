@@ -40,11 +40,15 @@ public class RelativePreference implements Formula {
 	}
 
 	@Override
-	public Set<? extends Term> getTerms() {
+	public Set<Term> getPropositions() {
 		Set<Term> t = new HashSet<>();
-		t.addAll(phi.getTerms());
-		t.addAll(psi.getTerms());
+		t.addAll(phi.getPropositions());
+		t.addAll(psi.getPropositions());
 		return t;
 	}
 		
+	@Override
+	public boolean contains(Term t) {
+		return phi.contains(t) || psi.contains(t);
+	}
 }

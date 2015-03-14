@@ -16,7 +16,8 @@ public interface Formula {
 	
 	boolean check(QDTModel m, int world);
 	int size();
-	Set<? extends Term> getTerms();
+	Set<Term> getPropositions();
+	boolean contains(Term t);
 	
 	@Override
 	String toString();

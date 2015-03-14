@@ -44,8 +44,13 @@ public abstract class OrderingFormula implements Formula {
 	}
 	
 	@Override
-	public Set<? extends Term> getTerms() {
-		return fml.getTerms();
+	public Set<Term> getPropositions() {
+		return fml.getPropositions();
+	}
+	
+	@Override
+	public boolean contains(Term t) {
+		return fml.contains(t);
 	}
 	
 	protected abstract Iterator<Integer> getIterator(QDTModel m, int world);

@@ -1,3 +1,5 @@
+% this agent bids only when not badInfo since if he bids, he prefers to be verified
+
 Preferences:
 	bid(bob,lamp) => verified(bob).
 

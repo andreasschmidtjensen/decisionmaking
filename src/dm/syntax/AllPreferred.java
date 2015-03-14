@@ -39,9 +39,13 @@ public class AllPreferred implements Formula {
 	}
 	
 	@Override
-	public Set<? extends Term> getTerms() {
-		return fml.getTerms();
+	public Set<Term> getPropositions() {
+		return fml.getPropositions();
 	}
 	
+	@Override
+	public boolean contains(Term t) {
+		return fml.contains(t);
+	}
 	
 }
