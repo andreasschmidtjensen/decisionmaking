@@ -69,19 +69,31 @@ public class DecisionModel {
 		True TRUE = new True();
 		Formula result = TRUE;
 		
+		Set<Literal> resultSet = new HashSet<>();
+		
 		for (Literal c : controllable) {
 			if (fml.equals(c)) {
 				continue;
 			}
-			Formula test = revise(beliefBase, fml);
 			
+			Set<Literal> bb = new HashSet<>(beliefBase);
+			bb.remove(c.negate());
+
+			Formula test = revise(bb, fml);
 			ConditionalNormality norm = new ConditionalNormality(test, c);
-			if (norm.check(qdt, qdt.getWorld())) {
-				if (result == TRUE) {
-					result = c;
-				} else {
-					result = new And(result, c);
-				}
+			boolean normResult = norm.check(qdt, qdt.getWorld());
+			
+			if (normResult) {
+				resultSet.add(c);
+				resultSet.remove(c.negate());
+			}
+		}
+		
+		for (Literal l : resultSet) {
+			if (result == TRUE) {
+				result = l;
+			} else {
+				result = new And(result, l);
 			}
 		}
 		return result;

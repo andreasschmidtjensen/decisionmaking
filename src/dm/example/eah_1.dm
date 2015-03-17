@@ -1,12 +1,11 @@
 % this agent bids only when not badInfo since if he bids, he prefers to be verified
 
 Preferences:
-	b => v.
+	true => b && p.
 
 Expectations:
-	i => ~b.
-	v => ~i.
-	~v => ~b.
-	~v && b => ~p.
+	b => v.
+	i => ~v.
+	b && i => ~p.
 
 Impossible states:

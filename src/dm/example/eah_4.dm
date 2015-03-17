@@ -1,7 +1,7 @@
 % s=violation (sanction)
 
 Preferences:
-	b => p.
+	true => b.
 	p => ~s1.
 
 Expectations:

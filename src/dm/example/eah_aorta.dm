@@ -12,7 +12,7 @@
 % Dec=[bid(bob,lamp)]
 
 Preferences:
-	bid(bob,lamp) => participates(bob,lamp).
+	true => bid(bob,lamp).
 	participates(bob,lamp) => ~viol(bob,buyer,obliged,verified(bob)).
 
 Expectations:
