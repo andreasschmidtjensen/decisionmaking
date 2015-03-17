@@ -75,6 +75,9 @@ public class DecisionModel {
 			if (fml.equals(c)) {
 				continue;
 			}
+			if (beliefBase.contains(c)) {
+				continue;
+			}
 			
 			Set<Literal> bb = new HashSet<>(beliefBase);
 			bb.remove(c.negate());

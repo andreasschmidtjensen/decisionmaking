@@ -75,6 +75,8 @@ public class DMGui extends JFrame {
 		setLayout(new BorderLayout(10,10));
 		
 		JPanel setup = createSetup();
+		setup.setPreferredSize(new Dimension(300, Integer.MAX_VALUE));
+		setup.setMaximumSize(setup.getPreferredSize());
 		JPanel outputs = createOutputs();
 		
 		add(setup, BorderLayout.LINE_START);
@@ -109,10 +111,15 @@ public class DMGui extends JFrame {
 		setup.add(influences);
 		
 		JLabel lblControllable = new JLabel("Controllable:");
-		final JTextField controllable = new JTextField(lastInput.getProperty("controllables"));
-		controllable.setMaximumSize(new Dimension(600, 30));
+		final JTextArea controllable = new JTextArea(lastInput.getProperty("controllables"));
+		controllable.setLineWrap(true);
+		controllable.setWrapStyleWord(true);
+		
 		setup.add(lblControllable);
-		setup.add(controllable);
+		JScrollPane scrollControllable = new JScrollPane(controllable);		
+		scrollControllable.setPreferredSize(new Dimension(600, 90));
+		scrollControllable.setMaximumSize(scrollControllable.getPreferredSize());
+		setup.add(scrollControllable);
 
 		JButton loadRules = new JButton("Generate model");
 		setup.add(loadRules);		
@@ -176,10 +183,15 @@ public class DMGui extends JFrame {
 		});
 		
 		JLabel lblBeliefs = new JLabel("Beliefs:");
-		final JTextField beliefs = new JTextField(lastInput.getProperty("beliefs"));
-		beliefs.setMaximumSize(new Dimension(600, 30));
+		final JTextArea beliefs = new JTextArea(lastInput.getProperty("beliefs"));
+		beliefs.setLineWrap(true);
+		beliefs.setWrapStyleWord(true);
+		
 		setup.add(lblBeliefs);
-		setup.add(beliefs);
+		JScrollPane scrollBeliefs = new JScrollPane(beliefs);
+		scrollBeliefs.setPreferredSize(new Dimension(600, 90));
+		scrollBeliefs.setMaximumSize(scrollBeliefs.getPreferredSize());
+		setup.add(scrollBeliefs);
 				
 		JButton run = new JButton("Run");
 		setup.add(run);

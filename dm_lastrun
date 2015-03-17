@@ -1,7 +1,7 @@
 #
-#Tue Mar 17 09:00:38 CET 2015
+#Tue Mar 17 14:27:54 CET 2015
 ec=~b
 file=src/dm/example/eah_1.dm
+beliefs=i && p
 influences=b && ~b
-beliefs=~i && p
-controllables=b && v && p && i
+controllables=b &&  p && v 
