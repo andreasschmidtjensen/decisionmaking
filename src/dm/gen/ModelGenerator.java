@@ -40,15 +40,6 @@ public class ModelGenerator {
 	 * The relevant propositions given the influences
 	 */
 	private Set<Term> atoms;
-	
-	/**
-	 * Checked propositions (for traversing through the rules to find relevant propositions)
-	 */
-	private Set<Term> checked;
-	/**
-	 * Map from proposition to the rules it is used in
-	 */
-	private Map<Term, Set<Rule>> map;
 		
 	public ModelGenerator(RuleProgram program) {
 		this.program = program;
@@ -86,12 +77,12 @@ public class ModelGenerator {
 	}
 
 	private Set<Term> retrieveAtoms(Set<Literal> influences, Set<Term> controllables, List<Rule> rules) {
-		Set<Term> atoms = new HashSet<>();
+		Set<Term> result = new HashSet<>();
 		for (Literal l : influences) {
-			atoms.add(new Term(l.getName()));
+			result.add(new Term(l.getName()));
 		}
 		Set<Term> checked = new HashSet<>();
-		Queue<Term> pending = new LinkedList<>(atoms);
+		Queue<Term> pending = new LinkedList<>(result);
 		while (!pending.isEmpty()) {
 			Term a = pending.poll();
 			if (checked.contains(a)) {
@@ -108,7 +99,7 @@ public class ModelGenerator {
 				}
 				Set<Term> termsInRule = rule.getPropositions();
 				if (termsInRule.contains(a)) {
-					atoms.addAll(termsInRule);
+					result.addAll(termsInRule);
 					pending.addAll(termsInRule);
 				}
 			}
@@ -116,38 +107,9 @@ public class ModelGenerator {
 			checked.add(a);
 		}
 		
-		return atoms;
+		return result;
 	}
 
-	private boolean reaches(Term test, Set<Term> influences, Set<Term> controllables) {
-		if (!map.containsKey(test)) {
-			return false;
-		}
-		
-		for (Rule rule : map.get(test)) {
-			if (rule.getPropositions().stream().anyMatch((Term t) ->
-					influences.contains(t))) {
-				return true;
-			}
-		}	
-		for (Rule rule : map.get(test)) {
-			// ignore rule if none of the consequents are controllable by the agent 
-			// (i.e. the agent's actions cannot lead to this and the rule is thus irrelevant)
-			Set<Term> consequent = new HashSet<>(rule.getConsequent().getPropositions());
-			consequent.retainAll(controllables);
-			if (consequent.isEmpty()) {
-				continue;
-			}
-			checked.add(test);
-			for (Term t : rule.getPropositions()) {
-				if (!checked.contains(t) && reaches(t, influences, controllables)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
 	private Map<Integer, Set<Term>> init(List<Set<Literal>> impossible) {
 		Map<Integer, Set<Term>> result = new HashMap<>();
 		int w = 1;
